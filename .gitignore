@@ -1,0 +1,9 @@
+# WeChat mini program
+miniprogram_npm/
+node_modules/
+*.private.*
+
+# IDE
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,211 @@
+<!-- 首页 -->
+<view wx:if="{{!connMode && !editorMode}}" class="home">
+  <view class="status-plate {{connected ? 'live' : 'idle'}}">
+    <view class="status-indicator">
+      <view class="led {{connected ? 'on' : 'off'}}"></view>
+      <view class="led-ring {{connected ? 'pulse' : ''}}"></view>
+    </view>
+    <view class="status-body">
+      <text class="status-label">{{statusText}}</text>
+      <text class="status-desc">{{statusDesc}}</text>
+      <view wx:if="{{connected}}" class="device-info">
+        <text class="device-name">{{deviceName}}</text>
+        <text class="device-id">{{deviceId}}</text>
+      </view>
+    </view>
+    <view wx:if="{{connected}}" class="status-action" bindtap="disconnect"><text>断开</text></view>
+  </view>
+  <view class="action-area">
+    <view wx:if="{{!connected}}" class="hero-btn connect-btn" bindtap="goConnect">
+      <view class="hero-btn-icon"><text class="icon-bt">◈</text></view>
+      <view class="hero-btn-body">
+        <text class="hero-btn-title">连接打印机</text>
+        <text class="hero-btn-sub">搜索附近的蓝牙设备</text>
+      </view>
+      <text class="hero-btn-arrow">→</text>
+    </view>
+    <view wx:else class="hero-btn print-btn" bindtap="goEditor">
+      <view class="hero-btn-icon"><text class="icon-edit">◇</text></view>
+      <view class="hero-btn-body">
+        <text class="hero-btn-title">编辑打印内容</text>
+        <text class="hero-btn-sub">文字 · 图片 · 条码 · 排版</text>
+      </view>
+      <text class="hero-btn-arrow">→</text>
+    </view>
+  </view>
+  <view class="features">
+    <view class="feature-row">
+      <view class="feature-item"><text class="feature-num">01</text><text class="feature-text">添加文字、图片、二维码、条形码</text></view>
+      <view class="feature-item"><text class="feature-num">02</text><text class="feature-text">拖拽排序 · 字号加粗 · 对齐排版</text></view>
+    </view>
+    <view class="feature-row">
+      <view class="feature-item"><text class="feature-num">03</text><text class="feature-text">实时预览 · 所见即所得</text></view>
+      <view class="feature-item"><text class="feature-num">04</text><text class="feature-text">一键蓝牙打印 · 快速出纸</text></view>
+    </view>
+  </view>
+  <view class="footer-tag"><text class="footer-dot">●</text><text>THERMAL PRINTER READY</text><text class="footer-dot">●</text></view>
+</view>
+
+<!-- 连接页 -->
+<view wx:if="{{connMode}}" class="scanner">
+  <view style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20rpx">
+    <text style="font-size:28rpx;font-weight:700;color:#1a1714">搜索设备</text>
+    <text style="font-size:24rpx;color:#07c160" bindtap="goHome">← 返回</text>
+  </view>
+  <view class="prompt-bar type-{{promptType}}">
+    <text class="prompt-dot">●</text><text>{{prompt}}</text>
+  </view>
+  <view class="scan-trigger {{searching ? 'active' : ''}}" bindtap="toggleSearch">
+    <view class="scan-icon-wrap">
+      <view class="scan-radar {{pulseActive ? 'spinning' : ''}}"></view>
+      <view class="scan-core {{searching ? 'live' : ''}}"></view>
+      <view wx:if="{{!searching}}" class="scan-standby">▶</view>
+    </view>
+    <text class="scan-label">{{btSearch}}</text>
+    <text wx:if="{{searching}}" class="scan-hint">发现 {{devices.length}} 台设备</text>
+  </view>
+  <scroll-view class="device-list" scroll-y>
+    <view wx:for="{{devices}}" wx:key="deviceId" class="device-row"
+      data-deviceid="{{item.deviceId}}" data-name="{{item.name || item.localName}}" bindtap="connectDevice">
+      <view class="signal-meter">
+        <view class="sig-bar s1 {{item.RSSI > -90 ? 'hot' : ''}}"></view>
+        <view class="sig-bar s2 {{item.RSSI > -75 ? 'hot' : ''}}"></view>
+        <view class="sig-bar s3 {{item.RSSI > -60 ? 'hot' : ''}}"></view>
+        <view class="sig-bar s4 {{item.RSSI > -45 ? 'hot' : ''}}"></view>
+      </view>
+      <view class="device-body">
+        <text class="dev-name">{{item.name || item.localName || '未知设备'}}</text>
+        <text class="dev-id">{{item.deviceId}}</text>
+      </view>
+      <view class="device-rssi">
+        <text class="rssi-val">{{item.RSSI}}</text><text class="rssi-unit">dBm</text>
+      </view>
+      <text class="device-chevron">→</text>
+    </view>
+    <view wx:if="{{devices.length === 0 && !searching}}" class="empty-state">
+      <text class="empty-icon">◎</text><text class="empty-text">点击上方按钮开始搜索</text>
+    </view>
+    <view wx:if="{{devices.length === 0 && searching}}" class="empty-state">
+      <text class="empty-icon scanning">◎</text><text class="empty-text">正在搜索中...</text>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 编辑器 -->
+<view wx:if="{{editorMode}}" class="editor">
+  <view class="top-bar">
+    <view class="bar-btn" bindtap="goHome"><text>← 返回</text></view>
+    <text class="bar-title">排版编辑</text>
+    <view class="bar-btn accent" bindtap="printAll"><text>◇ 打印</text></view>
+  </view>
+  <scroll-view class="block-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+    <view wx:if="{{blocks.length === 0}}" class="empty-canvas">
+      <view class="empty-paper">
+        <view class="empty-paper-line w60"></view><view class="empty-paper-line w80"></view>
+        <view class="empty-paper-line w40"></view><view class="empty-paper-line w90"></view>
+        <view class="empty-paper-line w50"></view>
+      </view>
+      <text class="empty-label">空白画布</text>
+      <text class="empty-hint">点击下方 ＋ 开始排版</text>
+    </view>
+    <view wx:for="{{blocks}}" wx:key="id" class="block-card {{item.type}}">
+      <view class="block-top">
+        <view class="block-badge type-{{item.type}}">
+          <text wx:if="{{item.type === 'text'}}">Aa</text>
+          <text wx:elif="{{item.type === 'image'}}">◻</text>
+          <text wx:elif="{{item.type === 'qrcode'}}">⊞</text>
+          <text wx:elif="{{item.type === 'barcode'}}">≣</text>
+          <text wx:elif="{{item.type === 'divider'}}">—</text>
+          <text wx:elif="{{item.type === 'blank'}}">↵</text>
+          <text wx:elif="{{item.type === 'feed'}}">↡</text>
+        </view>
+        <text class="block-type-label">{{typeLabels[item.type]}}</text>
+        <view class="block-controls">
+          <view class="ctrl-btn" data-index="{{index}}" bindtap="moveBlockUp"><text>↑</text></view>
+          <view class="ctrl-btn" data-index="{{index}}" bindtap="moveBlockDown"><text>↓</text></view>
+          <view class="ctrl-btn del" data-index="{{index}}" bindtap="deleteBlock"><text>✕</text></view>
+        </view>
+      </view>
+      <view class="block-body {{item.bold ? 'is-bold' : ''}} align-{{item.align || 0}} size-{{item.fontSize || 0}}" data-index="{{index}}" bindtap="editBlock">
+        <view wx:if="{{item.type === 'text'}}" class="text-block">{{item.content || '(点击编辑)'}}</view>
+        <view wx:elif="{{item.type === 'image'}}" class="image-block">
+          <image wx:if="{{item.imagePath}}" src="{{item.imagePath}}" mode="widthFix" style="max-width:{{item.imageWidth}}rpx" />
+          <view wx:else class="image-placeholder"><text class="ph-icon">◇</text><text>点击选择图片</text></view>
+        </view>
+        <view wx:elif="{{item.type === 'qrcode'}}" class="code-block"><text class="code-prefix">[QR]</text><text class="code-text">{{item.content}}</text></view>
+        <view wx:elif="{{item.type === 'barcode'}}" class="code-block"><text class="code-prefix">[BAR]</text><text class="code-text">{{item.content}}</text></view>
+        <view wx:elif="{{item.type === 'divider'}}" class="divider-block"><text>· · · · · · · · · · · · · · · ·</text></view>
+        <view wx:elif="{{item.type === 'blank'}}" class="spacer-block"><text class="spacer-dot">·</text><text>空行</text><text class="spacer-dot">·</text></view>
+        <view wx:elif="{{item.type === 'feed'}}" class="spacer-block"><text class="spacer-dot">·</text><text>走纸 {{item.feedLines || 4}} 行</text><text class="spacer-dot">·</text></view>
+      </view>
+      <view wx:if="{{item.type === 'text'}}" class="format-tags">
+        <text wx:if="{{item.fontSize === 0}}" class="fmt-tag">标准</text>
+        <text wx:elif="{{item.fontSize === 1}}" class="fmt-tag">倍宽</text>
+        <text wx:elif="{{item.fontSize === 2}}" class="fmt-tag">倍高</text>
+        <text wx:elif="{{item.fontSize === 3}}" class="fmt-tag">倍宽高</text>
+        <text wx:if="{{item.bold}}" class="fmt-tag">加粗</text>
+        <text wx:if="{{item.align === 1}}" class="fmt-tag">居中</text>
+        <text wx:elif="{{item.align === 2}}" class="fmt-tag">居右</text>
+      </view>
+    </view>
+    <view style="height:140rpx"></view>
+  </scroll-view>
+  <view class="bottom-bar">
+    <view class="add-main-btn {{modal === 'add' ? 'open' : ''}}" bindtap="showAddPanel">
+      <text class="add-main-icon">{{modal === 'add' ? '✕' : '＋'}}</text>
+    </view>
+  </view>
+
+  <!-- 添加面板 -->
+  <view wx:if="{{modal === 'add'}}" class="overlay" bindtap="hideAddPanel">
+    <view class="add-panel" catchtap="noop">
+      <view class="panel-handle"></view>
+      <text class="panel-title">添加内容块</text>
+      <view class="panel-grid">
+        <view class="panel-cell" data-type="text" bindtap="addBlock"><view class="cell-icon c-text">Aa</view><text>文字</text></view>
+        <view class="panel-cell" data-type="image" bindtap="addBlock"><view class="cell-icon c-image">◻</view><text>图片</text></view>
+        <view class="panel-cell" data-type="qrcode" bindtap="addBlock"><view class="cell-icon c-qr">⊞</view><text>二维码</text></view>
+        <view class="panel-cell" data-type="barcode" bindtap="addBlock"><view class="cell-icon c-bar">≣</view><text>条形码</text></view>
+        <view class="panel-cell" data-type="divider" bindtap="addBlock"><view class="cell-icon c-div">—</view><text>分割线</text></view>
+        <view class="panel-cell" data-type="blank" bindtap="addBlock"><view class="cell-icon c-blank">↵</view><text>空行</text></view>
+        <view class="panel-cell" data-type="feed" bindtap="addBlock"><view class="cell-icon c-feed">↡</view><text>走纸</text></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑弹窗 -->
+  <view wx:if="{{modal === 'edit'}}" class="overlay">
+    <view class="edit-sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <text class="sheet-title">{{editData.type === 'text' ? '编辑文字' : editData.type === 'qrcode' ? '编辑二维码' : '编辑条形码'}}</text>
+      <view wx:if="{{editData.type === 'text'}}">
+        <textarea class="edit-textarea" value="{{editData.content}}" bindinput="onEditContentInput" placeholder="输入文字内容..." auto-height maxlength="500" focus="{{true}}" />
+        <view class="fmt-section"><text class="fmt-section-label">字号</text>
+          <view class="fmt-row">
+            <view class="fmt-chip {{editData.fontSize === 0 ? 'on' : ''}}" data-size="0" bindtap="setFontSize">标准</view>
+            <view class="fmt-chip {{editData.fontSize === 1 ? 'on' : ''}}" data-size="1" bindtap="setFontSize">倍宽</view>
+            <view class="fmt-chip {{editData.fontSize === 2 ? 'on' : ''}}" data-size="2" bindtap="setFontSize">倍高</view>
+            <view class="fmt-chip {{editData.fontSize === 3 ? 'on' : ''}}" data-size="3" bindtap="setFontSize">倍宽高</view>
+          </view>
+        </view>
+        <view class="fmt-section"><text class="fmt-section-label">样式</text>
+          <view class="fmt-row"><view class="fmt-chip {{editData.bold ? 'on' : ''}}" bindtap="toggleBold">B 加粗</view></view>
+        </view>
+        <view class="fmt-section"><text class="fmt-section-label">对齐</text>
+          <view class="fmt-row">
+            <view class="fmt-chip {{editData.align === 0 ? 'on' : ''}}" data-align="0" bindtap="setAlign">≡ 居左</view>
+            <view class="fmt-chip {{editData.align === 1 ? 'on' : ''}}" data-align="1" bindtap="setAlign">≡ 居中</view>
+            <view class="fmt-chip {{editData.align === 2 ? 'on' : ''}}" data-align="2" bindtap="setAlign">≡ 居右</view>
+          </view>
+        </view>
+      </view>
+      <view wx:else>
+        <textarea class="edit-textarea mono" value="{{editData.codeContent}}" bindinput="onCodeContentInput" placeholder="{{editData.type === 'qrcode' ? '网址或文本内容...' : '条码数字/字母...'}}" auto-height maxlength="100" focus="{{true}}" />
+      </view>
+      <view class="sheet-actions">
+        <view class="sheet-btn cancel" bindtap="cancelEdit">取消</view>
+        <view class="sheet-btn save" bindtap="confirmEdit">确定</view>
+      </view>
+    </view>
+  </view>
+</view>

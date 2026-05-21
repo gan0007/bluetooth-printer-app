@@ -1,0 +1,1 @@
+App({globalData:{deviceId:"",deviceName:"",blocks:[]}})
