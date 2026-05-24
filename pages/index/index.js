@@ -561,8 +561,9 @@ Page({
     blocks.push(text('日    期: 2026年5月22日', 0, false, 0));
     blocks.push(divider());
 
-    // Table header
-    blocks.push(text('  品名            数量  单价    金额', 0, true, 0));
+    // Table header - align with data columns: name@0(22w), qty@22(8w), up@30, amt@39
+    var headerLine = '品名' + Array(19).join(' ') + '数量' + Array(5).join(' ') + '单价' + Array(6).join(' ') + '金额';
+    blocks.push(text(headerLine, 0, true, 0));
     blocks.push(divider());
 
     // Product list - barcode, name, qty, unitPrice, amount
@@ -605,7 +606,7 @@ Page({
     blocks.push(divider());
 
     // Totals
-    blocks.push(text('合计: 42件          金额: ¥790.90', 0, true, 0));
+    blocks.push(text('合计: 42件          金额: 790.90元', 0, true, 0));
     blocks.push(dblDiv());
     blocks.push(text('人民币(大写): 柒佰玖拾元玖角整', 0, true, 1));
     blocks.push(dblDiv());
