@@ -565,26 +565,34 @@ Page({
     blocks.push(text('  品名            数量  单价    金额', 0, true, 0));
     blocks.push(divider());
 
-    // Product list - product, qty, unitPrice, amount
+    // Table header
+    blocks.push(text('条码/品名        数量  单价    金额', 0, true, 0));
+    blocks.push(divider());
+
+    // Product list - barcode, name, qty, unitPrice, amount
     var products = [
-      ['蒙牛纯牛奶 946ml',      '2箱',  '45.00',  '90.00'],
-      ['白胡椒粉 2500g',        '1袋',  '68.00',  '68.00'],
-      ['海天酱油 500ml',        '5瓶',  '12.50',  '62.50'],
-      ['太太乐鸡精 454g',       '3袋',  '18.00',  '54.00'],
-      ['十三香 30g',            '10盒',  '5.50',  '55.00'],
-      ['老干妈风味豆豉 280g',    '4瓶',   '9.90',  '39.60'],
-      ['康师傅红烧牛肉面 110g',  '1箱',  '52.00',  '52.00'],
-      ['金龙鱼调和油 5L',       '2桶',  '89.90', '179.80'],
-      ['海天蚝油 700g',         '6瓶',  '15.00',  '90.00'],
-      ['双汇火腿肠 400g',       '8包',  '12.50', '100.00']
+      ['6970618570049','蒙牛纯牛奶 946ml',      '2箱',  '45.00',  '90.00'],
+      ['6970713990711','白胡椒粉 2500g',        '1袋',  '68.00',  '68.00'],
+      ['6901234567890','海天酱油 500ml',        '5瓶',  '12.50',  '62.50'],
+      ['6922345678901','太太乐鸡精 454g',       '3袋',  '18.00',  '54.00'],
+      ['6933456789012','十三香 30g',            '10盒',  '5.50',  '55.00'],
+      ['6944567890123','老干妈风味豆豉 280g',    '4瓶',   '9.90',  '39.60'],
+      ['6955678901234','康师傅红烧牛肉面 110g',  '1箱',  '52.00',  '52.00'],
+      ['6966789012345','金龙鱼调和油 5L',       '2桶',  '89.90', '179.80'],
+      ['6977890123456','海天蚝油 700g',         '6瓶',  '15.00',  '90.00'],
+      ['6988901234567','双汇火腿肠 400g',       '8包',  '12.50', '100.00']
     ];
 
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
-      var name = p[0], qty = p[1], up = p[2], amt = p[3];
-      // Pad to align columns: name(22 char width), qty(8), up(10), amt(10)
-      var nameW = 22, qtyW = 8, upW = 10;
-      // Calculate Chinese chars in name (each = 2 char widths)
+      var barcode = p[0], name = p[1], qty = p[2], up = p[3], amt = p[4];
+
+      // Barcode block + product line
+      blocks.push({ type: 'barcode', id: 'bc'+barcode, content: barcode });
+
+      // Product text line: name(dynamic width), qty, unitPrice, amount
+      // Fit in 48 ASCII char widths for 80mm paper
+      var nameW = 24, qtyW = 6, upW = 8;
       var nameLen = 0;
       for (var j = 0; j < name.length; j++) {
         nameLen += (name.charCodeAt(j) > 127) ? 2 : 1;
@@ -595,7 +603,7 @@ Page({
         qtyLen += (qty.charCodeAt(k) > 127) ? 2 : 1;
       }
       var pad2 = qtyLen < qtyW ? new Array(qtyW - qtyLen + 1).join(' ') : ' ';
-      var line = name + pad1 + qty + pad2 + up + '    ' + amt;
+      var line = ' ' + name + pad1 + qty + pad2 + up + '   ' + amt;
       blocks.push(text(line, 0, false, 0));
     }
 
