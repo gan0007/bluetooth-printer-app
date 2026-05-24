@@ -392,7 +392,7 @@ Page({
         wx.getImageInfo({
           src: res.tempFiles[0].tempFilePath,
           success: function(info) {
-            var maxW = 380, w = info.width, h = info.height;
+            var maxW = 520, w = info.width, h = info.height;
             if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
             var blocks = that.data.blocks.slice();
             blocks[index].imagePath = res.tempFiles[0].tempFilePath;
@@ -490,7 +490,7 @@ Page({
           wx.getImageInfo({
             src: block.imagePath,
             success: function(info) {
-              processGraphic(info, block.imageWidth || 380, block.imageHeight || 380).then(function(cmd) {
+              processGraphic(info, 520, 520).then(function(cmd) {
                 writeBufferPack(cmd).then(resolve).catch(function() { writeText('[图片失败]\r\n'); resolve(); });
               }).catch(function() { writeText('[图片失败]\r\n'); resolve(); });
             },
@@ -501,7 +501,7 @@ Page({
         var c = block.content || 'https://example.com';
         var len = c.length;
         var pL = (len + 3) & 0xFF, pH = ((len + 3) >> 8) & 0xFF;
-        writeBuffer(makeESC(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x06));
+        writeBuffer(makeESC(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x08));
         writeBuffer(makeESC(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, 0x30));
         var bytes = [0x1D, 0x28, 0x6B, pL, pH, 0x31, 0x50, 0x30];
         for (var i = 0; i < len; i++) bytes.push(c.charCodeAt(i));
@@ -511,8 +511,8 @@ Page({
         return Promise.resolve();
       case 'barcode':
         var bc = block.content || '1234567890';
-        writeBuffer(makeESC(0x1D, 0x68, 80));
-        writeBuffer(makeESC(0x1D, 0x77, 3));
+        writeBuffer(makeESC(0x1D, 0x68, 120));
+        writeBuffer(makeESC(0x1D, 0x77, 4));
         writeBuffer(makeESC(0x1D, 0x48, 2));
         // ESC/POS: GS k m n d1...dn  (m=73=CODE128, n=数据长度)
         var bbytes = [0x1D, 0x6B, 0x49, bc.length];
