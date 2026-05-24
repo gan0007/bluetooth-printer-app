@@ -565,10 +565,6 @@ Page({
     blocks.push(text('  品名            数量  单价    金额', 0, true, 0));
     blocks.push(divider());
 
-    // Table header
-    blocks.push(text('条码/品名        数量  单价    金额', 0, true, 0));
-    blocks.push(divider());
-
     // Product list - barcode, name, qty, unitPrice, amount
     var products = [
       ['6970618570049','蒙牛纯牛奶 946ml',      '2箱',  '45.00',  '90.00'],
@@ -587,11 +583,8 @@ Page({
       var p = products[i];
       var barcode = p[0], name = p[1], qty = p[2], up = p[3], amt = p[4];
 
-      // Single line: barcode(13) + space + name(dynamic) + pad + qty + pad + price + pad + amount
-      // Target: fit in 48 char-widths on 80mm paper
-      // Layout: [13位条码] [品名...] [数量] [单价] [金额]
-      var bcStr = barcode;  // 13 ASCII = 13 char-widths
-      var nameW = 14, qtyW = 6;
+      // Line 1: product name + qty + unit price + amount
+      var nameW = 22, qtyW = 8;
       var nameLen = 0;
       for (var j = 0; j < name.length; j++) {
         nameLen += (name.charCodeAt(j) > 127) ? 2 : 1;
@@ -602,8 +595,11 @@ Page({
         qtyLen += (qty.charCodeAt(k) > 127) ? 2 : 1;
       }
       var pad2 = qtyLen < qtyW ? new Array(qtyW - qtyLen + 1).join(' ') : ' ';
-      var line = bcStr + ' ' + name + pad1 + qty + pad2 + up + '  ' + amt;
-      blocks.push(text(line, 0, false, 0));
+      var line1 = ' ' + name + pad1 + qty + pad2 + up + '    ' + amt;
+      blocks.push(text(line1, 0, false, 0));
+
+      // Line 2: barcode number (indented)
+      blocks.push(text('   ' + barcode, 0, false, 0));
     }
 
     blocks.push(divider());
