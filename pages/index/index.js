@@ -595,11 +595,11 @@ Page({
         qtyLen += (qty.charCodeAt(k) > 127) ? 2 : 1;
       }
       var pad2 = qtyLen < qtyW ? new Array(qtyW - qtyLen + 1).join(' ') : ' ';
-      var line1 = ' ' + name + pad1 + qty + pad2 + up + '    ' + amt;
+      var line1 = name + pad1 + qty + pad2 + up + '    ' + amt;
       blocks.push(text(line1, 0, false, 0));
 
-      // Line 2: barcode number (indented)
-      blocks.push(text('   ' + barcode, 0, false, 0));
+      // Line 2: barcode number (aligned with product name)
+      blocks.push(text(barcode, 0, false, 0));
     }
 
     blocks.push(divider());
