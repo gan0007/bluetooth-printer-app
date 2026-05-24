@@ -587,12 +587,11 @@ Page({
       var p = products[i];
       var barcode = p[0], name = p[1], qty = p[2], up = p[3], amt = p[4];
 
-      // Barcode block + product line
-      blocks.push({ type: 'barcode', id: 'bc'+barcode, content: barcode });
-
-      // Product text line: name(dynamic width), qty, unitPrice, amount
-      // Fit in 48 ASCII char widths for 80mm paper
-      var nameW = 24, qtyW = 6, upW = 8;
+      // Single line: barcode(13) + space + name(dynamic) + pad + qty + pad + price + pad + amount
+      // Target: fit in 48 char-widths on 80mm paper
+      // Layout: [13位条码] [品名...] [数量] [单价] [金额]
+      var bcStr = barcode;  // 13 ASCII = 13 char-widths
+      var nameW = 14, qtyW = 6;
       var nameLen = 0;
       for (var j = 0; j < name.length; j++) {
         nameLen += (name.charCodeAt(j) > 127) ? 2 : 1;
@@ -603,7 +602,7 @@ Page({
         qtyLen += (qty.charCodeAt(k) > 127) ? 2 : 1;
       }
       var pad2 = qtyLen < qtyW ? new Array(qtyW - qtyLen + 1).join(' ') : ' ';
-      var line = ' ' + name + pad1 + qty + pad2 + up + '   ' + amt;
+      var line = bcStr + ' ' + name + pad1 + qty + pad2 + up + '  ' + amt;
       blocks.push(text(line, 0, false, 0));
     }
 
