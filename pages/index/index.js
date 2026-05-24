@@ -557,6 +557,7 @@ Page({
     // Header
     blocks.push(dblDiv());
     blocks.push(text('东莞市维俊食品送货单', 3, true, 1));
+    blocks.push(blank());
     blocks.push(text('NO.2600795', 0, false, 1));
     blocks.push(dblDiv());
 
@@ -622,7 +623,7 @@ Page({
     blocks.push(dblDiv());
 
     // Signature
-    blocks.push(text('送货人: 李伟           收货人: 张明', 0, false, 0));
+    blocks.push(text('送货人: 李伟           收货人: ________', 0, false, 0));
     blocks.push(text('签收日期: ____年____月____日', 0, false, 0));
     blocks.push(feed(3));
 

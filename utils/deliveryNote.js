@@ -189,6 +189,7 @@ function print(ble, opts) {
   queue.push({ t: title });
   queue.push(normalSize());
   queue.push(boldOff());
+  queue.push({ t: '' });   // 空行拉开标题与单号间距
   queue.push({ t: orderNo, c: true });
   queue.push(alignLeft());
   queue.push({ d: true });  // ======
@@ -236,8 +237,8 @@ function print(ble, opts) {
 
   // 签名
   var sigLine = '送货人: ' + deliveryMan +
-                repeatStr(' ', AMT_START - measureWidth('送货人: ' + deliveryMan) - 4) +
-                '收货人: ' + receiver;
+                repeatStr(' ', AMT_START - measureWidth('送货人: ' + deliveryMan) - 6) +
+                '收货人: ________';
   queue.push({ t: sigLine });
   queue.push({ t: '签收日期: ____年____月____日' });
 
