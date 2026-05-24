@@ -191,6 +191,13 @@ Page({
   _deviceFoundHandler: null, _adapterStateHandler: null, _saveTimer: null,
 
   onLoad: function() {
+    // 版本升级时清除旧缓存，避免加载过期模板
+    var ver = 'v2';
+    var oldVer = wx.getStorageSync('editor_ver');
+    if (oldVer !== ver) {
+      wx.removeStorageSync('editor_blocks');
+      wx.setStorageSync('editor_ver', ver);
+    }
     var saved = wx.getStorageSync('editor_blocks');
     if (saved && saved.length) this.setData({ blocks: saved });
     this.refreshStatus();
@@ -535,6 +542,9 @@ Page({
   },
 
   loadDeliveryDemo: function() {
+    // 先清除旧缓存，确保使用最新模板
+    wx.removeStorageSync('editor_blocks');
+
     var barcode = function(c) { return { type: 'barcode', id: 'bc'+c, content: c }; };
     var divider = function() { return { type: 'divider', id: 'dv'+Math.random().toString(36).slice(2,8), content: '------------------------------------------------' }; };
     var dblDiv = function() { return { type: 'divider', id: 'dd'+Math.random().toString(36).slice(2,8), content: '================================================' }; };
