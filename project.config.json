@@ -46,8 +46,8 @@
     "disableSWC": true
   },
   "compileType": "miniprogram",
-  "libVersion": "3.0.0",
-  "appid": "wxd10583536e9f7c09",
+  "libVersion": "3.16.1",
+  "appid": "wxa2ea86c3dda83b9f",
   "projectname": "bluetooth-printer",
   "condition": {},
   "editorSetting": {

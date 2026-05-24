@@ -534,6 +534,89 @@ Page({
     }
   },
 
+  loadDeliveryDemo: function() {
+    var barcode = function(c) { return { type: 'barcode', id: 'bc'+c, content: c }; };
+    var divider = function() { return { type: 'divider', id: 'dv'+Math.random().toString(36).slice(2,8), content: '------------------------------------------------' }; };
+    var dblDiv = function() { return { type: 'divider', id: 'dd'+Math.random().toString(36).slice(2,8), content: '================================================' }; };
+    var text = function(c, sz, b, al) { return { type: 'text', id: 't'+Math.random().toString(36).slice(2,8), content: c, fontSize: sz||0, bold: !!b, align: al||0 }; };
+    var blank = function() { return { type: 'blank', id: 'b'+Math.random().toString(36).slice(2,8), content: '' }; };
+    var feed = function(n) { return { type: 'feed', id: 'f'+Math.random().toString(36).slice(2,8), content: '', feedLines: n||4 }; };
+
+    var blocks = [];
+
+    // Header
+    blocks.push(dblDiv());
+    blocks.push(text('东莞市维俊食品送货单', 3, true, 1));
+    blocks.push(text('NO.2600795', 0, false, 1));
+    blocks.push(dblDiv());
+
+    // Contact info
+    blocks.push(text('订货电话: 18122884991  18122914891', 0, false, 0));
+    blocks.push(text('微    信: W18122914891', 0, false, 0));
+    blocks.push(text('投诉电话: 13694950666', 0, false, 0));
+    blocks.push(divider());
+
+    // Customer info
+    blocks.push(text('收货单位: 永辉超市(长安店)', 0, false, 0));
+    blocks.push(text('日    期: 2026年5月22日', 0, false, 0));
+    blocks.push(divider());
+
+    // Table header
+    blocks.push(text('  品名            数量  单价    金额', 0, true, 0));
+    blocks.push(divider());
+
+    // Product list - product, qty, unitPrice, amount
+    var products = [
+      ['蒙牛纯牛奶 946ml',      '2箱',  '45.00',  '90.00'],
+      ['白胡椒粉 2500g',        '1袋',  '68.00',  '68.00'],
+      ['海天酱油 500ml',        '5瓶',  '12.50',  '62.50'],
+      ['太太乐鸡精 454g',       '3袋',  '18.00',  '54.00'],
+      ['十三香 30g',            '10盒',  '5.50',  '55.00'],
+      ['老干妈风味豆豉 280g',    '4瓶',   '9.90',  '39.60'],
+      ['康师傅红烧牛肉面 110g',  '1箱',  '52.00',  '52.00'],
+      ['金龙鱼调和油 5L',       '2桶',  '89.90', '179.80'],
+      ['海天蚝油 700g',         '6瓶',  '15.00',  '90.00'],
+      ['双汇火腿肠 400g',       '8包',  '12.50', '100.00']
+    ];
+
+    for (var i = 0; i < products.length; i++) {
+      var p = products[i];
+      var name = p[0], qty = p[1], up = p[2], amt = p[3];
+      // Pad to align columns: name(22 char width), qty(8), up(10), amt(10)
+      var nameW = 22, qtyW = 8, upW = 10;
+      // Calculate Chinese chars in name (each = 2 char widths)
+      var nameLen = 0;
+      for (var j = 0; j < name.length; j++) {
+        nameLen += (name.charCodeAt(j) > 127) ? 2 : 1;
+      }
+      var pad1 = nameLen < nameW ? new Array(nameW - nameLen + 1).join(' ') : ' ';
+      var qtyLen = 0;
+      for (var k = 0; k < qty.length; k++) {
+        qtyLen += (qty.charCodeAt(k) > 127) ? 2 : 1;
+      }
+      var pad2 = qtyLen < qtyW ? new Array(qtyW - qtyLen + 1).join(' ') : ' ';
+      var line = name + pad1 + qty + pad2 + up + '    ' + amt;
+      blocks.push(text(line, 0, false, 0));
+    }
+
+    blocks.push(divider());
+
+    // Totals
+    blocks.push(text('合计: 42件          金额: ¥790.90', 0, true, 0));
+    blocks.push(dblDiv());
+    blocks.push(text('人民币(大写): 柒佰玖拾元玖角整', 0, true, 1));
+    blocks.push(dblDiv());
+
+    // Signature
+    blocks.push(text('送货人: 李伟           收货人: 张明', 0, false, 0));
+    blocks.push(text('签收日期: ____年____月____日', 0, false, 0));
+    blocks.push(feed(3));
+
+    this.setData({ blocks: blocks });
+    this.saveBlocks();
+    wx.showToast({ title: '送货单模板已加载', icon: 'success' });
+  },
+
   clearAll: function() {
     var that = this;
     wx.showModal({ title: '确认清空', content: '确定要清空所有内容吗？',

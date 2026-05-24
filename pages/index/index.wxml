@@ -96,6 +96,7 @@
   <view class="top-bar">
     <view class="bar-btn" bindtap="goHome"><text>← 返回</text></view>
     <text class="bar-title">排版编辑</text>
+    <view class="bar-btn" bindtap="loadDeliveryDemo"><text>⊞ 送货单</text></view>
     <view class="bar-btn accent" bindtap="printAll"><text>◇ 打印</text></view>
   </view>
   <scroll-view class="block-scroll" scroll-y enhanced show-scrollbar="{{false}}">
